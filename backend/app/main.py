@@ -7,8 +7,8 @@ from .database import engine
 from .config import settings
 from .services import ai_service
 
-# APIルーターのインポート（後で実装）
-# from .api.v1.endpoints import users, activities, feedback
+# APIルーターのインポート
+from .api.routes import activities, users, feedback, auth
 
 # ロギングの設定
 logging.basicConfig(
@@ -54,10 +54,11 @@ async def startup_event():
     except Exception as e:
         logger.error(f"Failed to initialize Vertex AI: {str(e)}")
 
-# APIルートの登録 (後で実装時にコメントを外す)
-# app.include_router(users.router, prefix=settings.API_V1_STR, tags=["users"])
-# app.include_router(activities.router, prefix=settings.API_V1_STR, tags=["activities"])
-# app.include_router(feedback.router, prefix=settings.API_V1_STR, tags=["feedback"])
+# APIルートの登録
+app.include_router(auth.router, prefix=f"{settings.API_V1_STR}/auth", tags=["auth"])
+app.include_router(users.router, prefix=f"{settings.API_V1_STR}/users", tags=["users"])
+app.include_router(activities.router, prefix=f"{settings.API_V1_STR}/activities", tags=["activities"])
+app.include_router(feedback.router, prefix=f"{settings.API_V1_STR}/feedback", tags=["feedback"])
 
 @app.get("/")
 async def root():
