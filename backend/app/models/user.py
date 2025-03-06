@@ -1,5 +1,4 @@
 from sqlalchemy import Column, Integer, String, DateTime, func, JSON
-from sqlalchemy.orm import relationship
 from ..database import Base
 
 class User(Base):
@@ -11,22 +10,16 @@ class User(Base):
     name = Column(String)
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-    
-    # Relationships
-    profile = relationship("UserProfile", back_populates="user", uselist=False)
-    feedbacks = relationship("Feedback", back_populates="user")
+
 
 class UserProfile(Base):
     __tablename__ = "user_profiles"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, nullable=False)
-    interests = Column(JSON)  # JSON array of interests
+    user_id = Column(Integer, nullable=False, index=True)
+    interests = Column(String)  # JSON文字列で格納
     work_style = Column(String, nullable=False)
-    rest_preferences = Column(JSON)  # JSON array of preferences
-    textual_profile = Column(String)  # AI-generated profile text
+    rest_preferences = Column(String)  # JSON文字列で格納
+    textual_profile = Column(String)  # AI生成された文章形式のプロファイル
     created_at = Column(DateTime, default=func.now())
     updated_at = Column(DateTime, default=func.now(), onupdate=func.now())
-    
-    # Relationships
-    user = relationship("User", back_populates="profile")
