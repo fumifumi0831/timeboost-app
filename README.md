@@ -30,12 +30,31 @@
 - Gemini Flash 2.0 API
 - TensorFlow/Scikit-learn
 
+## Gemini Flash 2.0の活用
+
+本プロジェクトでは、Google Cloudの最新モデルであるGemini Flash 2.0を活用して以下の機能を実現しています：
+
+1. **ユーザープロファイルの生成**
+   - ユーザーの興味関心、仕事スタイル、休息の好みからテキスト形式のプロファイルを生成
+   - バックエンドは`ai_service.generate_textual_profile`でGemini Flash 2.0 APIを呼び出し
+
+2. **活動カテゴリーの推奨**
+   - ユーザープロファイル、現在の疲労度、場所を考慮してユーザーに最適な活動カテゴリを選定
+   - `ai_service.get_recommended_categories`で実装
+
+3. **活動のパーソナライズ**
+   - ユーザーの過去のフィードバックデータを分析し、ユーザーの好みを学習
+   - `ai_service.personalize_activities`でフィードバックデータに基づくパーソナライズを実現
+
+これらの機能は全て`backend/app/services/ai_service.py`に実装されています。
+    
 ## 開発セットアップ
 
 ### 前提条件
 - Node.js 18+
 - Python 3.11+
 - Git
+- Google Cloud APIアクセス（Gemini Flash 2.0の利用）
 
 ### インストール手順
 
@@ -55,16 +74,69 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
+### 環境変数の設定
+
+バックエンドのルートディレクトリに `.env` ファイルを作成し、以下の内容を設定します：
+
+```
+# 基本設定
+SECRET_KEY=your_secret_key_here
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=1440
+
+# Google Cloud / Vertex AI 設定
+GOOGLE_APPLICATION_CREDENTIALS=path/to/your/credentials.json
+GCP_PROJECT_ID=your-gcp-project-id
+```
+
+### データベースの初期化
+
+```bash
+cd backend
+python -m scripts.seed_db
+```
+
 ### 開発サーバーの起動
 
 ```bash
-# フロントエンド開発サーバー
-cd frontend
-npm run dev
-
-# バックエンド開発サーバー
+# バックエンド開発サーバー（一つのターミナルで）
 cd backend
 python -m app.main
+
+# フロントエンド開発サーバー（別のターミナルで）
+cd frontend
+npm run dev
+```
+
+## ディレクトリ構造
+
+### バックエンド
+```
+backend/
+├── app/
+│   ├── api/              # API エンドポイント
+│   ├── crud/             # データベース操作
+│   ├── models/           # データベースモデル
+│   ├── schemas/          # Pydantic スキーマ
+│   ├── services/         # ビジネスロジック
+│   ├── config.py         # 設定
+│   ├── database.py       # DB設定
+│   └── main.py           # アプリケーションエントリーポイント
+├── data/                 # サンプルデータ
+├── scripts/              # スクリプト
+└── requirements.txt      # 依存関係
+```
+
+### フロントエンド
+```
+frontend/
+├── src/
+│   ├── app/              # Next.js ページ
+│   ├── components/       # React コンポーネント
+│   ├── lib/              # ユーティリティ
+│   └── types/            # TypeScript 型定義
+├── public/               # 静的ファイル
+└── package.json          # 依存関係
 ```
 
 ## ライセンス
